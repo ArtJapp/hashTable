@@ -4,13 +4,17 @@
 
 #include "stdafx.h"
 #include <iostream>
-#include <cstring>
+#include <string>
+#include <ctime>
+#include "time.h"
+#include "durak.h"
+
 using namespace std;
 
 struct Student
 {
-	char * firstName;
-	char * lastName;
+	string firstName;
+	string lastName;
 	int course;
 	int group;
 	int recordBook;
@@ -25,18 +29,18 @@ struct HashTable
 Student createPerson()
 {
 	cout << "\nВведите фамилию: ";
-	char firstName[50];
+	string firstName;
 	cin >> firstName;
-	cout << "\nВведите имя: ";
-	char lastName[50];
+	cout << "Введите имя: ";
+	string lastName;
 	cin >> lastName;
-	cout << "\nВведите группу: ";
+	cout << "Введите группу: ";
 	int group;
 	cin >> group;
-	cout << "\nВведите курс: ";
+	cout << "Введите курс: ";
 	int course;
 	cin >> course;
-	cout << "\nВведите номер зачетной книжки: ";
+	cout << "Введите номер зачетной книжки: ";
 	int recordBook;
 	cin >> recordBook;
 
@@ -57,19 +61,19 @@ int getHashKey(Student Person)
 
 void printStudent(Student person)
 {
-	cout << person.firstName << '\t' << person.lastName << '\t' << "курс: " <<person.course << '\t' << "группа: " << person.group << "ЗачКнижка: " << person.recordBook << endl;
+	cout << "Фамилия: " << person.firstName << '\t' << "Имя: " << person.lastName << '\t' << "курс: " << person.course << '\t' << "группа: " << person.group << '\t' << "ЗачКнижка: " << person.recordBook << endl;
 }
 
 void printList(HashTable *& hash)
 {
 	if (hash != NULL)
 	{
-			cout << endl;
-			cout << '\t';
-			printStudent(hash->Person);
+		cout << endl;
+		cout << '\t';
+		printStudent(hash->Person);
 
-			if (hash->next != NULL)
-				printList(hash->next);
+		if (hash->next != NULL)
+			printList(hash->next);
 	}
 	else
 	{
@@ -126,12 +130,39 @@ int main()
 	{
 		hash[i] = NULL;
 	}
-	printTable(hash);
-	Student st = createPerson();
-	addElement(*&hash[getHashKey(st)], st);
-	st = createPerson();
-	addElement(*&hash[getHashKey(st)], st);
-	printTable(hash);
+
+	enum comands { EXIT, PRINT, ADD, DELETE };
+	cout << "Команды:\n"
+		<< "\t 1. Печать списка\n"
+		<< "\t 2. Добавить новый элемент\n"
+		<< "\t 3. Удалить элемент\n"
+		<< "\t 0. Выход\n";
+	comands operation = (comands)input();
+	while (operation)
+	{
+		switch (operation)
+		{
+		case PRINT: {
+			printTable(*&hash);
+			break;
+		}
+		case ADD: {
+			Student person = createPerson();
+			addElement(*&hash[getHashKey(person)], person);
+			break;
+		}
+		case EXIT: {
+			return 0;
+		}
+		}
+		cout << "Команды:\n"
+			<< "\t 1. Печать списка\n"
+			<< "\t 2. Добавить новый элемент\n"
+			<< "\t 3. Удалить элемент\n"
+			<< "\t 0. Выход\n";
+		operation = (comands)input();
+
+	}
 	system("pause");
     return 0;
 }
