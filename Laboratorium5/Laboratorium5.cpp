@@ -4,7 +4,7 @@
 
 #include "stdafx.h"
 #include <iostream>
-
+#include <cstring>
 using namespace std;
 
 struct Student
@@ -50,9 +50,9 @@ Student createPerson()
 	return tempPerson;
 }
 
-int getHashKey(int recordBook)
+int getHashKey(Student Person)
 {
-	return recordBook % 10;
+	return Person.recordBook % 10;
 }
 
 void printStudent(Student person)
@@ -64,16 +64,16 @@ void printList(HashTable *& hash)
 {
 	if (hash != NULL)
 	{
-		while (hash != NULL)
-		{
-			printStudent(hash->Person);
 			cout << endl;
-			printList(hash->next);
-		}
+			cout << '\t';
+			printStudent(hash->Person);
+
+			if (hash->next != NULL)
+				printList(hash->next);
 	}
 	else
 	{
-		cout << "is empty";
+		cout << " пустоту";
 	}
 }
 
@@ -81,13 +81,58 @@ void printTable(HashTable ** hash)
 {
 	for (int i = 0; i < 10; i++)
 	{
-		cout << " \nСтрока " << i << " содержит в себе:\n";
+		cout << " \nСтрока " << i << " содержит в себе: ";
 		printList(*&hash[i]);
+	}
+	cout << endl;
+}
+
+HashTable * search(HashTable *& hash, int recordBook)
+{
+	if (hash == NULL)
+	{
+		return NULL;
+	}
+	if (hash->Person.recordBook == recordBook)
+	{
+		return hash;
+	}
+	else
+	{
+		search(hash->next, recordBook);
+	}
+}
+
+void addElement(HashTable *& hash, Student Person)
+{
+	if (hash == NULL)
+	{
+		hash = new HashTable;
+		hash->key = getHashKey(Person);
+		hash->Person = Person;
+		hash->next = NULL;
+	}
+	else
+	{
+		addElement(hash->next, Person);
 	}
 }
 
 int main()
 {
+	setlocale(0, "RUSSIAN");
+	HashTable ** hash = new HashTable*[10];
+	for (int i = 0; i < 10; i++)
+	{
+		hash[i] = NULL;
+	}
+	printTable(hash);
+	Student st = createPerson();
+	addElement(*&hash[getHashKey(st)], st);
+	st = createPerson();
+	addElement(*&hash[getHashKey(st)], st);
+	printTable(hash);
+	system("pause");
     return 0;
 }
 
